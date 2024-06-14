@@ -1,11 +1,12 @@
 plugins {
+    `maven-publish`
     kotlin("jvm") version "1.9.22"
     kotlin("plugin.serialization") version "1.9.23"
     application
 }
 
 group = "io.github.dockyardmc"
-version = "1.0-SNAPSHOT"
+version = "1.0"
 
 repositories {
     mavenCentral()
@@ -30,9 +31,29 @@ tasks.test {
 }
 
 kotlin {
-    jvmToolchain(17)
+    jvmToolchain(21)
 }
 
 application {
     mainClass.set("MainKt")
+}
+
+publishing {
+    repositories {
+        maven {
+            url = uri("https://mvn.devos.one/releases")
+            credentials {
+                username = System.getenv()["MAVEN_USER"]
+                password = System.getenv()["MAVEN_PASS"]
+            }
+        }
+    }
+    publications {
+        register<MavenPublication>("maven") {
+            groupId = "io.github.dockyardmc"
+            artifactId = "wikivg-datagen"
+            version = version
+            from(components["java"])
+        }
+    }
 }
