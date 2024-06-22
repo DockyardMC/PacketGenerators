@@ -27,7 +27,10 @@ class HTMLParser(val html: String) {
             while (nextSibling != null && nextSibling.tagName() != "h4") {
                 if (nextSibling.tagName() == "table") {
                     val tableRows = nextSibling.select("tr")
-                    if(!tableRows.toString().contains("Packet ID")) break
+                    if(!tableRows.toString().contains("Packet ID")) {
+                        nextSibling = nextSibling.nextElementSibling()
+                        continue
+                    }
 
                     val dataRow = tableRows[1]
                     val packetInfo = dataRow.select("td")
@@ -61,7 +64,9 @@ class HTMLParser(val html: String) {
             boundTo = boundTo.lowercase()
             state = state.lowercase()
 
-            result.add(Packet(packetId, header, packetName, state, boundTo, fields))
+            val packet = Packet(packetId, header, packetName, state, boundTo, fields)
+            log(packet.toString())
+            result.add(packet)
         }
         log("Parsed ${result.size} packets from provided HTML", LogType.SUCCESS)
         return result

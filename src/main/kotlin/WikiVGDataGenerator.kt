@@ -7,7 +7,7 @@ import kotlinx.serialization.json.Json
 @OptIn(ExperimentalSerializationApi::class)
 class WikiVGDataGenerator {
 
-    var packets: List<HTMLParser.Packet> = mutableListOf()
+    var packets: List<Packet> = mutableListOf()
     var json: String = ""
 
     init {
@@ -20,6 +20,6 @@ class WikiVGDataGenerator {
             prettyPrint = true
             prettyPrintIndent = "    "
         }
-        json = pretty.encodeToString<List<HTMLParser.Packet>>(packets)
+        json = pretty.encodeToString<List<Packet>>(packets)
     }
 }
