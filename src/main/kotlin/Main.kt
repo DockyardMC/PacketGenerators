@@ -1,5 +1,7 @@
 import cz.lukynka.prettylog.LogType
 import cz.lukynka.prettylog.log
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import java.io.File
 
 fun main(args: Array<String>) {
@@ -16,3 +18,21 @@ fun main(args: Array<String>) {
 
     log("Written to file successfully!", LogType.SUCCESS)
 }
+
+@Serializable
+data class Packet(
+    var id: String,
+    val header: String,
+    val packet: String,
+    @SerialName("protocol_state")
+    var protocolState: String,
+    @SerialName("bound_to")
+    var boundTo: String,
+    var content: List<PacketField>
+)
+
+@Serializable
+data class PacketField(
+    val field: String,
+    val type: String
+)

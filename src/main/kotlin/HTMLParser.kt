@@ -4,6 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import java.lang.Exception
 
 class HTMLParser(val html: String) {
 
@@ -35,50 +36,36 @@ class HTMLParser(val html: String) {
                     state = packetInfo[1].text()
                     boundTo = packetInfo[2].text()
 
-                    for (rowIndex in 2 until tableRows.size) {
-                        val tds = tableRows[rowIndex].select("td")
-                        if (tds.size >= 3) {
-                            var fieldName = tds[0].text().trim()
-                            var fieldType = tds[1].text().trim()
+                    try {
+                        for (rowIndex in 2 until tableRows.size) {
+                            val tds = tableRows[rowIndex].select("td")
+                            if (tds.size >= 3) {
+                                var fieldName = tds[0].text().trim()
+                                var fieldType = tds[1].text().trim()
 
-                            fieldName = fieldName.toLowerCase().replace(" ", "_")
-                            fieldType = fieldType.toSnakeCase()
+                                fieldName = fieldName.toLowerCase().replace(" ", "_")
+                                fieldType = fieldType.toSnakeCase()
 
-                            fields.add(PacketField(fieldName, fieldType))
+                                fields.add(PacketField(fieldName, fieldType))
+                            }
                         }
+                    } catch (ex: Exception) {
+                        log("Error when getting fields for $header", LogType.FATAL)
                     }
+
                 }
                 nextSibling = nextSibling.nextElementSibling()
             }
 
-            if (fields.isNotEmpty()) {
+            val packetName = header.toSnakeCase().replace(" ", "")
+            boundTo = boundTo.lowercase()
+            state = state.lowercase()
 
-                val packetName = header.toSnakeCase().replace(" ", "")
-                boundTo = boundTo.lowercase()
-                state = state.lowercase()
-
-                result.add(Packet(packetId, header, packetName, state, boundTo, fields))
-            }
+            result.add(Packet(packetId, header, packetName, state, boundTo, fields))
         }
         log("Parsed ${result.size} packets from provided HTML", LogType.SUCCESS)
         return result
     }
 
-    @Serializable
-    data class Packet(
-        var id: String,
-        val header: String,
-        val packet: String,
-        @SerialName("protocol_state")
-        var protocolState: String,
-        @SerialName("bound_to")
-        var boundTo: String,
-        var content: List<PacketField>
-    )
 
-    @Serializable
-    data class PacketField(
-        val field: String,
-        val type: String
-    )
 }

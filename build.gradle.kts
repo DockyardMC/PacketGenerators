@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "io.github.dockyardmc"
-version = "1.0"
+version = "1.1"
 
 repositories {
     mavenCentral()
@@ -21,7 +21,7 @@ repositories {
 dependencies {
     testImplementation(kotlin("test"))
     implementation("cz.lukynka:pretty-log:1.4")
-    implementation("org.jsoup:jsoup:1.14.3")
+    implementation("org.jsoup:jsoup:1.17.2")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.3.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0")
 }
