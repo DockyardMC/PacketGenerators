@@ -64,6 +64,11 @@ class HTMLParser(val html: String) {
             boundTo = boundTo.lowercase()
             state = state.lowercase()
 
+            if(packetId.isEmpty() || !isValidHexInt(packetId)) {
+                log("Packet $packetName has empty packet id, skipping..", LogType.WARNING)
+                continue
+            }
+
             val packet = Packet(packetId, header, packetName, state, boundTo, fields)
             log(packet.toString())
             result.add(packet)
@@ -71,6 +76,11 @@ class HTMLParser(val html: String) {
         log("Parsed ${result.size} packets from provided HTML", LogType.SUCCESS)
         return result
     }
+}
 
-
+fun isValidHexInt(packetId: String): Boolean {
+    if (packetId.startsWith("0x", ignoreCase = true) && packetId.length > 2) {
+        return packetId.substring(2).toIntOrNull(16) != null
+    }
+    return false
 }
